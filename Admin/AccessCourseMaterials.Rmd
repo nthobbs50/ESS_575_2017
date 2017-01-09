@@ -70,7 +70,7 @@ Does your computer have git installed?
 
 #### III. Initial clone of the course repository
 
-Open terminal/bash and navigate to the directory where you would like to hold the course materials. If you are not familiar or comfortable using the command line, we **highly** recommend using the root directory. For the rest of this quick intro, we will refer to the path to your root directory as ``rootPath``.  
+Open terminal/bash and navigate to the directory where you would like to hold the course materials. If you are not familiar or comfortable using the command line, I **highly** recommend using the root directory. For the rest of this quick intro, I will refer to the path to your root directory as ``rootPath``.  
 
 1.  To navigate quickly to the root directory type the following terminal/bash window:
 
@@ -111,7 +111,7 @@ I will add and modify course material frequnetly. I urge you to update the cours
 
 Each time you ``pull`` and updated version of the course repository your local machine will have a clean (untouched) copy of **all** course materials.  **Therefore, if you modify the course materials it is extremely important that you save your work under a different name.**  If you fail to save your work with a new name, your work will be lost the next time you ``pull`` to get the most up-to-date materials. Where you choose to save your work doesn't matter. You can choose a brand new directory or you can save within the directory that you've created for our course ``ESS_575_2017``. 
 
-Inevitably, you will make an inadvertent or deliberate change to a file in the course materials stored in the ``ESS_575_2017` folder. In this case, your ``pull`` will fail.  To remedy this:
+Inevitably, you will make an inadvertent or deliberate change to a file in the course materials stored in the `ESS_575_2017`  folder. In this case, your ``pull`` will fail.  To remedy this:
 
 1.  You'll need to open your terminal/bash.
 
