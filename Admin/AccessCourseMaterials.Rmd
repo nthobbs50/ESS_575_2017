@@ -88,7 +88,7 @@ Open terminal/bash and navigate to the directory where you would like to hold th
 
 #### IV. Ongoing update of course materials
 
-We plan to update the course repository on a regular basis. It is likely that you will need to update your materials several times per day.  To do this you will ``pull`` a current copy of the repository. To do this: 
+I will add and modify course material frequnetly. I urge you to update the course material on your computer shortly before lecture and lab -- 9:00 on Tuesday Thursday and noon on Wednesday. To do this you will ``pull`` a current copy of the repository. To do this: 
 
 1.  You'll need to open your terminal/bash.
 
@@ -96,7 +96,7 @@ We plan to update the course repository on a regular basis. It is likely that yo
 
     ```bash
     cd
-    cd SESYNCBayes
+    cd ESS_575_2017
     ```
     
 3.  Paste the following into the terminal/bash:
@@ -109,9 +109,9 @@ We plan to update the course repository on a regular basis. It is likely that yo
 
 #### V. EXTREMELY IMPORTANT: Using git course materials 
 
-As noted in the previous section, each time you ``pull`` and updated version of the course repository your local machine will have a clean (untouched) copy of **all** course materials.  **Therefore, if you modify the course materials it is extremely important that you save your work under a different name.**  If you fail to save your work with a new name, your work will be lost the next time you ``pull`` to get the most up-to-date materials. Where you choose to save your work doesn't matter. You can choose a brand new directory or you can save within the directory that you've created for our course ``ESS_575_2017``. 
+Each time you ``pull`` and updated version of the course repository your local machine will have a clean (untouched) copy of **all** course materials.  **Therefore, if you modify the course materials it is extremely important that you save your work under a different name.**  If you fail to save your work with a new name, your work will be lost the next time you ``pull`` to get the most up-to-date materials. Where you choose to save your work doesn't matter. You can choose a brand new directory or you can save within the directory that you've created for our course ``ESS_575_2017``. 
 
-Inevitably, you will make an inadvertent or deliberate change to a file in the course materials. In this case, your ``pull`` will fail.  To remedy this:
+Inevitably, you will make an inadvertent or deliberate change to a file in the course materials stored in the ``ESS_575_2017` folder. In this case, your ``pull`` will fail.  To remedy this:
 
 1.  You'll need to open your terminal/bash.
 
@@ -159,11 +159,7 @@ I have prepared an R package that contains all the data you will need to complet
     library(ESS575)
     ```
     
-7.  To see the help files for ``ESS575`` type in R:
-
-    ```bash
-    ?ESS575
-    ```
+7.  To see the help files for ``ESS575`` go to the `Help` menu in Rstudio, choose `R Help`, click on `Packages` and follow your nose to ESS575.  (For some inexplicable reason, entering `?ESS575` at the console prompt doesn't work.  grrrrr.)
     
 <br>
 
