@@ -144,7 +144,7 @@ I have prepared an R package that contains all the data you will need to complet
 4. Run the following line of code in R to install the ``ESS575`` package from source. You can also install it using the same command directly in RStudio but you will need to write the full path to the file or set the working directory to ``rootPath/ESS_575_2017``.
 
     ```bash
-    install.packages("Packages/ESS575.0.1.0.tar.gz", repos = NULL, type = "source")
+    install.packages("Admin/ESS575_0.1.0.tar.gz", repos = NULL, type = "source")
     ```
 
 5.  Exit R by typing.
