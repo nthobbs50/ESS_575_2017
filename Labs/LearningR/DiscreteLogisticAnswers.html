@@ -187,9 +187,13 @@ par(ask = FALSE)
 #sequence to control for loop
 l = seq(from = .25, to = 4, by = .25)
 
+x_at_t = function(lambda,x,t) x[t]=lambda*x[t-1]*(1-x[t-1])
+
+
 for(lambda in l){
     for(t in 2:tend){
-        x[t]=lambda*x[t-1]*(1-x[t-1])
+        #x[t]=lambda*x[t-1]*(1-x[t-1])
+      x[t] = x_at_t(lambda=lambda, x = x, t=t)
         time[t] = t
     }
     z = as.character(lambda)
@@ -227,7 +231,7 @@ for(lambda in l){
     x = rep(0,times = 100)
     x[1] = .01
     for(t in 2:100){
-        x[t]=lambda*x[t-1]*(1-x[t-1])
+        x[t]=x_at_t(lambda=lambda,x=x, t=t)
         if(t &gt; 50){
             out[i,1]=lambda
             out[i,2]=x[t]
