@@ -90,11 +90,11 @@ continuous, strictly positive & lognormal or gamma & $\mu = e^{\beta_{0} + \beta
 ## Lots of flexibility as a modeler
 
 Continent-wide Ad$\'{e}$lie penguin population dynamics
-$$g(\boldsymbol{\beta},z_{i,t}) = \textrm{log}\big(z_{i,t-1}e^{\,\beta_{0,i}\,+\, \beta_{1}\textrm{wsic}_{i,t} \,+\, \beta_{2}\textrm{ssic}_{i,t} \,+\, \beta_{3}\textrm{krill}_{i,t}}\big)$$
+$$g(\boldsymbol{\beta},z_{i,t}) = \textrm{log}\big(z_{i,t-1}e^{\,(\beta_{0,i}\,+\, \beta_{1}\textrm{wsic}_{i,t} \,+\, \beta_{2}\textrm{ssic}_{i,t} \,+\, \beta_{3}\textrm{krill}_{i,t})\Delta t}\big)$$
 
 $$y_{i,t}\sim\text{Poisson}(z_{i,t})$$
 $$z_{i,t} \sim \textrm{lognormal} \big( z_{i,t} \mid g(\beta_{0,i}, \beta_{1}, \beta_{2}, \beta_{3}, z_{i,t-1}), \sigma^2_\text{process} \big)$$
-$$\beta_{0,i}\sim\text{normal}(\mu_{\,\text{site}},\varsigma_{\,\text{site}})$$
+$$\beta_{0,i}\sim\text{normal}(\mu_{\,\text{site}},\varsigma^2_{\,\text{site}})$$
 Comment about moment matching the mean here.
 
 \centerline{
