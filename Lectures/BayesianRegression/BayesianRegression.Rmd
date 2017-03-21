@@ -1,0 +1,452 @@
+---
+title: "Bayesian Regression"
+author: "N. Thompson Hobbs"
+date: "March 9 2017"
+output:
+  beamer_presentation:
+    includes:
+      in_header: header.tex
+  ioslides_presentation: default
+subtitle: ESS 575 Models for Ecological Data
+theme: Boadilla
+latex_engine: xelatex
+transition: fastest
+---
+
+## Learning outcomes
+
+- Understand Bayesian inference using familiar examples.
+- Appreciate one-to-one relationship between math and JAGS code.
+- Be able to interpret coefficients of general linear models.
+- Know how and why to center or standardize data.
+- Be able to translate scalar linear equations into matrix equations.
+
+## A great follow-up
+This book should be in your library:
+
+\vspace{-1 cm}
+\centerline{
+\includegraphics[width=.65 \textwidth]{../Graphics/GelmanBlackBook.pdf}
+}
+
+## The general Bayesian set-up
+
+Recall that the posterior distribution of the unobserved quantities conditional on the observed ones is proportional to their joint distribution:
+$$[\theta|y]\propto[\theta,y].$$
+The joint distribution can be factored into a likelihood and priors for simple Bayesian models:
+
+$$
+\big[\theta, \sigma^{2}\big]= \big[y \mid \theta, \sigma^{2}\big]\big[\theta\big]\big[\sigma^{2}\big]$$
+
+A deterministic model of an ecological process is embedded in the likelihood like this...
+
+$$\big[\boldsymbol{\theta}, \sigma^{2}\big]\propto \big[y \mid g\big(\boldsymbol{\theta},x\big), \sigma^{2}\big]\big[\boldsymbol{\theta}\big]\big[\sigma^{2}\big]$$
+
+## Simple Bayesian regression models 
+As always, we start with a deterministic model,
+$$\mu_{i}=\underbrace{g\big(\boldsymbol{\beta},x_{i}\big)}_{\mathclap{\text{deterministic model}}}$$
+where $\boldsymbol{\beta}$ is a vector of regression coefficients and $\mathbf{x}_i$ is a vector or predictor variables corresponding to observation $y_i$. We use likelihood to connect the predictions of our model to data:
+$$\underbrace{[y_i\mid\mu_i,\sigma^2]}_\text{stochastic model}$$
+
+
+$$\big[\boldsymbol{\beta} ,\sigma^{2}\mid \mathbf{y}\big]\propto \prod_{i=1}^n\big[y_i \mid g\big(\boldsymbol{\beta},x_i\big), \sigma^{2}\big]\big[\boldsymbol{\theta}\big]\big[\sigma^{2}\big]$$
+We choose appropriate deterministic functions (linear or non-linear) and appropriate probability distributions to compose  a specific model. Simple and flexible.
+
+##Identical notation
+$$y_i=g(\boldsymbol{\beta},x_i)+\epsilon_i$$
+$$\epsilon_i\sim\text{normal}(0,\sigma^2)$$
+
+is  the same as
+
+$$y_i\sim\text{normal}\big(g(\boldsymbol{\beta},x_i),\sigma^2\big),$$
+
+but the second notation is much more flexible because it doesn't require additive errors. 
+
+## You don't have to be normal!
+
+\tiny
+\begin{table}
+\begin{tabular}{M{2cm} | M{1cm} | M{2.5cm} | M{4cm} @{}m{0pt}@{}}
+Data (y-values) & Distribution & Mean function & Link & \\[8ex] 
+\hline
+continuous, real valued & normal & $\mu = \beta_{0} + \beta_{1}x$ & NA & \\[8ex]
+\hline
+discrete, strictly positive & Poisson & $\mu = e^{\beta_{0} + \beta_{1}x}$ & $\textrm{log}\big(\mu\big) = \beta_{0} + \beta_{1}x$&\\[8ex]
+\hline
+0 or 1 & Bernoulli & $\mu = \frac{\textrm{exp}\big(\beta_{0} + \beta_{1}x\big)}{\textrm{exp}\big(\beta_{0} + \beta_{1}x\big)+1}$ & $\textrm{logit}\big(\mu \big)=\textrm{log}\Big(\frac{\mu}{1-\mu}\Big)=\beta_{0} + \beta_{1}x$& \\[8ex]
+\hline
+0 -- 1 & beta & $\mu = \frac{\textrm{exp}\big(\beta_{0} + \beta_{1}x\big)}{\textrm{exp}\big(\beta_{0} + \beta_{1}x\big)+1}$ & $\textrm{logit}\big(\mu \big)=\textrm{log}\Big(\frac{\mu}{1-\mu}\Big)=\beta_{0} + \beta_{1}x$ &\\[8ex]
+\hline
+continuous, strictly positive & lognormal or gamma & $\mu = e^{\beta_{0} + \beta_{1}x}$ & $\textrm{log}\big(\mu\big) = \beta_{0} + \beta_{1}x$&\\[8ex]
+\hline
+\end{tabular}
+\end{table}
+
+## Lots of flexibility as a modeler
+
+Continent-wide Ad$\'{e}$lie penguin population dynamics
+$$g(\boldsymbol{\beta},z_{i,t}) = \textrm{log}\big(z_{i,t-1}e^{\,\beta_{0,i}\,+\, \beta_{1}\textrm{wsic}_{i,t} \,+\, \beta_{2}\textrm{ssic}_{i,t} \,+\, \beta_{3}\textrm{krill}_{i,t}}\big)$$
+
+$$y_{i,t}\sim\text{Poisson}(z_{i,t})$$
+$$z_{i,t} \sim \textrm{lognormal} \big( z_{i,t} \mid g(\beta_{0,i}, \beta_{1}, \beta_{2}, \beta_{3}, z_{i,t-1}), \sigma^2_\text{process} \big)$$
+$$\beta_{0,i}\sim\text{normal}(\mu_{\,\text{site}},\varsigma_{\,\text{site}})$$
+Comment about moment matching the mean here.
+
+\centerline{
+\includegraphics[width=.45\textwidth]{LambdaMap.pdf}
+\includegraphics[width=.45\textwidth]{AdeliePenguin.jpg}
+}
+
+\vspace{4mm}
+\tiny{Photo c/o Heather J. Lynch}
+
+
+## Normal data, continuous and real valued
+
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1},\sigma \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{normal}\big(y_{i} \mid g\big(\beta_{0},\beta_{1},x_{i}), \sigma^{2}) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000)\times \nonumber \\
+& &\textrm{uniform}\big(\sigma \mid 0, 100) \nonumber  \\
+g\big(\beta_{0},\beta_{1},x_{i})& = &\beta_{0}+\beta_{1}x_{i} \nonumber 
+\end{eqnarray}
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+sigma ~ dunif(0, 100)
+tau <- 1/sigma^2
+for (i in 1:length(y)){
+  mu[i] <- b0 + b1 * x[i]
+  y[i] ~ dnorm(mu[i], tau)
+}
+```
+## Exercise
+What is the interpretation of $\beta_0$?  Of $\beta_1$?
+
+## Poisson, discrete and positive
+
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1} \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{Poisson}\big(y_{i} \mid g\big(\beta_{0},\beta_{1},x_{i})) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000) \nonumber \\
+g\big(\beta_{0},\beta_{1},x_{i})& = &e^{\beta_{0}+\beta_{1}x_{i}} \nonumber 
+\end{eqnarray}
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+for(i in 1:length(y)){
+  log(mu[i]) <- b0 + b1 * x[i]
+  y[i] ~ dpois(mu[i])
+}
+```
+
+or
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+mu[i] <- exp(b0 + b1 * x[i])
+y[i] ~ dpois(mu[i])
+```
+## Exercise
+
+What is the interpretation of $\beta_0$? Of $\beta_1$
+
+Hint-- Expand $e^{\beta_0+\beta_1x_i}$
+
+## Poisson with offset
+$\log(u_i)=\text{\emph{offset} for observation }i$
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1} \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{Poisson}\big(y_{i} \mid g\big(\beta_{0},\beta_{1},x_{i},u_i)) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000) \nonumber \\
+g\big(\beta_{0},\beta_{1},x_{i}, u_i\,)& = & u_ie^{\beta_{0}+\beta_{1}x_{i}} \nonumber 
+\end{eqnarray}
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+for(i in 1:length(y)){
+  log(mu[i]) <- b0 + b1 * x[i]
+  y[i] ~ dpois(mu[i])
+}
+```
+
+## Bernoulli, data 0 or 1 (aka logistic)
+
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1} \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{Bernoulli}\big(y_{i} \mid g\big(\beta_{0},\beta_{1},x_{i})) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 2)\,\textrm{normal}\big(\beta_{1}\mid 0, 2) \nonumber \\
+g\big(\beta_{0},\beta_{1},x_{i})& = &\cfrac{e^{\beta_{0}+\beta_{1}x_{i}}}{e^{\beta_{0}+\beta_{1}x_{i}} + 1} \nonumber 
+\end{eqnarray}
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .5)
+b1 ~ dnorm(0, .5)
+for(i in 1:length(y)){
+  logit(p[i]) <- b0 + b1 * x[i]
+ 	y[i] ~ dbern(p[i]) 
+ }
+```
+
+or
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+p[i] <- inv.logit(b0 + b1 * x[i])
+y[i] ~ dbin(p[i])
+```
+##  Bernoulli, data 0 or 1 (aka logistic)
+\vspace{-1 cm}
+\centerline{
+\includegraphics[width=.75\textwidth]{../Graphics/LogisticRegression.pdf}
+}
+
+## Exercise
+What is the interpretation of the line, i.e. the model fit?
+What is the interpretation of $\beta_0$? Of $\beta_1$?
+
+```{r, echo=FALSE, eval=FALSE}
+##The interpretation of the line is the probability that y = 1 at a given x, i.e., $[y_i=1 \mid x_i]}$.  The interpretaion of the intercept is difficult.  Nonnsese at x=0.  Need to evaluate at some other point, for example the mean of x, $\text{inverse logit}(\beta_0+\beta_1 \text{mean}(x))$, which can be more easily accomplished by rescaling the data, described shortly. 
+
+```
+## Interpretation of the line, odds ratios, and odds
+
+The interpretation of the line is the probability that $y = 1$ at a given $x$, i.e., $[y_i=1 \mid x_i]$. We use these predictions to construct odds ratios:
+
+$$\overbrace{\log\left(\underbrace{\frac{[y_i=1 \mid x_i]}{[y_i=0 \mid x_i]}}_\text{odds}\right)}^\text{odds ratio}=\beta_0+\beta_1x_i$$ 
+
+## Interpreting the line and the intecept
+ The interpretation of the intercept is difficult.  Nonsense at x=0.  Need to evaluate at some other point, for example the mean of $x$, $\text{inverse logit}\big(\beta_0+\beta_1 \text{mean}(x)\big)$, which can be more easily accomplished by rescaling the data, discussed shortly. If data are rescaled such that $x$ = 0 at the mean of $x$, then then $e^{\beta_0}$ is the odds that $y=1$ at the mean of $x$. For example, if $e^{\beta_0}$ = 2, it is twice as likely that $y=1$ than $y=0$.
+
+## Interpreting slopes
+Odds ratios and odds:
+$$\overbrace{\log\left(\underbrace{\frac{[y_i=1 \mid x_i]}{[y_i=0 \mid x_i]}}_\text{odds}\right)}^\text{odds ratio}=\beta_0+\beta_1x_i$$ 
+$\beta_1$ is the additive change in the odds ratio per unit change in x. Exponentiating both sides we see that $e^\beta_1$ is the multiplicative change in the odds that $y=1$ given $x$ per unit change in x.
+
+## Guidance
+
+I advise using the inverse logit function
+
+$$g\big(\beta_{0},\beta_{1},x_{i}) = \cfrac{e^{\beta_{0}+\beta_{1}x_{i}}}{e^{\beta_{0}+\beta_{1}x_{i}} + 1}$$
+with specified $x$ values as a basis for interpreting the model.  Odds and, worse, odds ratios, can be difficult to understand and communicate.
+
+
+## lognormal, data continuous and > 0
+
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1},\sigma \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{lognormal}\big(y_{i} \mid \textrm{log}\big(g\big(\beta_{0},\beta_{1},x_{i})\big), \sigma^{2}) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000)\times \nonumber \\
+& &\textrm{uniform}\big(\sigma \mid 0, 5) \nonumber  \\
+g\big(\beta_{0},\beta_{1},x_{i})& = &e^{\beta_{0}+\beta_{1}x_{i}} \nonumber 
+\end{eqnarray}
+
+Talk about the interpretation of $\sigma$.
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+sigma ~ dunif(0, 5)
+tau <- 1/sigma^2
+for(i in 1:length(y)){
+  mu[i] <- exp(b0 + b1 * x[i])
+  y[i] ~ dlnorm(log(mu[i]), tau)
+}
+```
+## lognormal, data continuous and > 0
+\vspace{-1 cm}
+\centerline{
+\includegraphics[width=.75\textwidth]{../Graphics/LognormalRegression.pdf}
+}
+
+## lognormal, data continuous and > 0
+
+\small
+\begin{eqnarray*}
+\big[\beta_{0},\beta_{1},\sigma \mid \mathbf{y}] & \propto & \prod_{i=2}^{n}\textrm{lognormal}\big(y_{i} \mid \textrm{log}\big(g\big(\beta_{0},\beta_{1},y_{i-1}, H_{i})\big), \sigma^{2}) \times \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000)\times \\
+& &\textrm{uniform}\big(\sigma \mid 0, 5) \\
+g\big(\beta_{0},\beta_{1},y_{i-1},H_{i})& = & y_{i-1}e^{\beta_{0}+\beta_{1}y_{i-1}} - H_{i} 
+\end{eqnarray*}
+
+Talk about the bounding trick.
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+sigma ~ dunif(0, 5)
+tau <- 1/sigma^2
+for(i in 2:length(y)){
+  mu[i] <- y[i-1] * exp(b0 + b1 * y[i-1]) - H[i]
+  y[i] ~ dlnorm(log(max(.000001, mu[i])), tau)
+}
+```
+## Exercise
+
+What is the interpreation of $\beta_0$? $\beta_1$?
+
+
+## Nonlinear regression
+
+\centerline{\includegraphics[height=1.2in]{Bolker1.pdf}}
+
+\centerline{\includegraphics[height=1.2in]{Bolker2.pdf}}
+
+\vspace{10mm}
+\tiny{Figures c/o Bolker, B. 2008. \emph{Ecological Models and Data in R}. Princeton University Press, Princeton, NJ.  USA.}
+
+## Centering and standardizing
+
+The remainder of the slides apply to all of the general linear models,  but I will use  a simple linear for normally distributed data as an example.
+
+## Centering predictor data
+
+$$y_{i} = \beta_{0} + \beta_{1}\big(x_{i} - \bar{x}\big)$$
+
+\vspace{10mm}
+
+Why complicate things?
+
+- To reduce autocorrelation in MCMC chain and speed convergence.
+- To make the intercept more easily interpretable.
+
+## Centering predictor data
+
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1},\sigma \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{normal}\big(y_{i} \mid g\big(\beta_{0},\beta_{1},x_{i},\bar{x}), \sigma^{2}) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000)\times \nonumber \\
+& &\textrm{uniform}\big(\sigma \mid 0, 100) \nonumber  \\
+g\big(\beta_{0},\beta_{1},x_{i})& = &\beta_{0}+\beta_{1}\big(x_{i}-\bar{x}\big) \nonumber 
+\end{eqnarray}
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+sigma ~ dunif(0, 100)
+tau <- 1/sigma^2
+xBar <- mean(x)
+for (i in 1:length(y)){
+  mu[i] <- b0 + b1 * (x[i] - xBar)
+  y[i] ~ dnorm(mu[i], tau)
+}
+b0_UC <- b0 - b1 * xBar
+```
+
+## Recovering uncentered parameters
+
+\centerline{
+\includegraphics[width=.38\textwidth]{CenteredData.pdf}
+\includegraphics[width=.38\textwidth]{UnCenteredData.pdf}
+}
+
+\small
+\begin{eqnarray}
+B_{0} &=& \beta_{0} - \beta_{1}*\bar{x}\nonumber \\
+B_{1} &=& \beta_{1} \nonumber
+\end{eqnarray}
+
+- For this to work properly, all of the coefficients in the model must be *added*. 
+- Slopes will not be the same if there is an interaction term or quadratic. In these cases, back transforming is not simple.
+
+## Standardizing predictor data
+
+$$y_{i} = \beta_{0} + \beta_{1}\Big(\frac{x_{i} - \bar{x}}{\sigma_{x}}\Big)$$
+
+\vspace{10mm}
+
+Why complicate things?
+
+- To reduce autocorrelation in MCMC chain and speed convergence.
+- To make the intercept more easily interpretable.
+- To make parameters more easily comparable.
+
+## Interpreting the intercept
+
+\centerline{
+\includegraphics[width=1\textwidth]{../Graphics/ReindeerExaxmple.pdf}
+}
+
+
+## Standardizing predictor data
+
+\small
+\begin{eqnarray}
+\big[\beta_{0},\beta_{1},\sigma \mid \mathbf{y}] & \propto & \prod_{i=1}^{n}\textrm{normal}\big(y_{i} \mid g\big(\beta_{0},\beta_{1},x_{i},\bar{x}, \sigma_{x}), \sigma^{2}) \times \nonumber \\
+& & \textrm{normal}\big(\beta_{0}\mid 0, 1000)\,\textrm{normal}\big(\beta_{1}\mid 0, 1000)\times \nonumber \\
+& &\textrm{uniform}\big(\sigma \mid 0, 100) \nonumber  \\
+g\big(\beta_{0},\beta_{1},x_{i})& = &\beta_{0}+\beta_{1}\Big(\frac{x_{i}-\bar{x}}{\sigma_{x}}\Big) \nonumber 
+\end{eqnarray}
+
+```{r, include = TRUE, echo = TRUE, eval= FALSE}
+b0 ~ dnorm(0, .001)
+b1 ~ dnorm(0, .001)
+sigma ~ dunif(0, 100)
+tau <- 1/sigma^2
+xBar <- mean(x)
+xSD <- sd(x)
+for (i in 1:length(y)){
+  mu[i] <- b0 + b1 * ((x[i] - xBar)/xSD
+  y[i] ~ dnorm(mu[i], tau)
+}
+```
+
+## Recovering unstandardized parameters
+
+\small
+\begin{eqnarray}
+y_{i} & = & \beta_{0} + \beta_{1}\Big(\cfrac{x_{i}-\bar{x}}{\sigma_{x}}\Big) \nonumber \\
+y_{i} & = & \beta_{0} + \cfrac{\beta_{1}}{\sigma_{x}}-\cfrac{\beta_{1}\bar{x}}{\sigma_{x}}\nonumber \\
+B_{0} & = & \beta_{0} -\cfrac{\beta_{1}\bar{x}}{\sigma_{x}}\nonumber \\
+B_{1} & = & \cfrac{\beta_{1}}{\sigma_{x}}\nonumber 
+\end{eqnarray}
+\vspace{2mm}
+
+- This only works if there are not squared values or interactions.
+- Generally, I back-transform predictions not parameters. (How?)
+
+## Matrix notation for linear models
+
+Remeber matrix multiplication?
+
+$$\begin{aligned}
+\left(\begin{array}{ccc} 1 & x_{1,1} & x_{1,2}\\ 1 & x_{2,1} & x_{2,2}\\ 1 & x_{3,1} & x_{3,2}\\ 1 & . & .\\ 1 & . & .\\ 1 & . & .\\ 1 & x_{n,1} & x_{n,2} \end{array}\right)\left(\begin{array}{c} \beta_{0}\\ \beta_{1}\\ \beta_{2}\\.\\.\\.\\\beta_n \end{array}\right)&=&\left(\begin{array}{c} \beta_{0}+\beta_{1}x_{1,1}+\beta_{2}x_{1,2}\\ \beta_{0}+\beta_{1}x_{2,1}+\beta_{2}x_{2,2}\\ \beta_{0}+\beta_{1}x_{3,1}+\beta_{2}x_{3,2}\\ .\\ .\\ .\\ \beta_{0}+\beta_{1}x_{n,1}+\beta_{2}x_{n,2} \end{array}\right)=\left(\begin{array}{c} \mu_{1}\\ \mu_{2}\\ \mu_{3}\\ .\\ .\\ .\\ \mu_{n} \end{array}\right)
+\end{aligned}$$
+
+## Matrix notation for linear models
+
+You will often see models written using something like
+$$y_i \sim \text{normal}(\mathbf{x}_i'\boldsymbol{\beta},\sigma^2)$$
+or
+$$y_i \sim \text{normal}(\mathbf{x}_i^T\boldsymbol{\beta},\sigma^2)$$
+or 
+$$y_i \sim \text{normal}(\mathbf{X}_i\boldsymbol{\beta},\sigma^2)$$
+or
+$$\mathbf{y} \sim \text{multivariate normal}(\mathbf{X}\boldsymbol{\beta},\sigma^2I)$$
+Note that $\mathbf X$ is a matrix with ones in column 1 and values of covariates in other columns. Thus, $\mathbf X \boldsymbol{\beta}$ returns a vector. 
+
+## Exercise
+
+We want to predict species richness (number of different species) of avian communities in 50 US states based on a set of $p$ predictor variables.  Draw the Bayesian network and write the posterior and joint distribution, inducing the specific distributions appropriate for this problem. We assume that the response and predictor variables are measured perfectly. Use matrix notation to specify the deterministic model. 
+
+## Code for matrix computation of linear model: Prediting bird species diveresity
+```{r eval=FALSE}
+model {
+   # PRIORS, p = number of coefficients, including intercept
+    for(i in 1:p) {  
+      beta[i] ~ dnorm(0, 0.01)
+    }
+  # LIKELIHOOD
+    # n = number of states (rows in X)
+    # y = number of birds in each state
+    # X is a n x p matrix with 1s in column 1
+    z <- X %*% beta # the regression model, returns a vector 
+    #of length n
+    for(i in 1:n)   { 
+      y[i] ~ dpois(lambda[i])
+      lambda[i] <- exp(z[i])
+    }
+}
+```
+
