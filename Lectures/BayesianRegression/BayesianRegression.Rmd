@@ -13,6 +13,11 @@ latex_engine: xelatex
 transition: fastest
 ---
 
+## Where are we?
+\centerline{
+\includegraphics[width=.4\textwidth]{../Graphics/Hobbs_0_1_Modeling_process.pdf}
+}
+
 ## Learning outcomes
 
 - Understand Bayesian inference using familiar examples.
