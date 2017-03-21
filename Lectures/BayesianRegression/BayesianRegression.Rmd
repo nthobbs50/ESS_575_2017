@@ -1,7 +1,7 @@
 ---
 title: "Bayesian Regression"
 author: "N. Thompson Hobbs"
-date: "March 9 2017"
+date: "March 21 2017"
 output:
   beamer_presentation:
     includes:
@@ -172,7 +172,7 @@ g\big(\beta_{0},\beta_{1},x_{i}, u_i\,)& = & u_ie^{\beta_{0}+\beta_{1}x_{i}} \no
 b0 ~ dnorm(0, .001)
 b1 ~ dnorm(0, .001)
 for(i in 1:length(y)){
-  log(mu[i]) <- b0 + b1 * x[i]
+  log(mu[i]) <- log(u[i]) + b0 + b1 * x[i]
   y[i] ~ dpois(mu[i])
 }
 ```
@@ -415,9 +415,12 @@ B_{1} & = & \cfrac{\beta_{1}}{\sigma_{x}}\nonumber
 
 Remeber matrix multiplication?
 
+Exaample of $n$ observations for 2 predictor variables $x_{i,1}$ and $x_{i,2}$. 
+
 $$\begin{aligned}
-\left(\begin{array}{ccc} 1 & x_{1,1} & x_{1,2}\\ 1 & x_{2,1} & x_{2,2}\\ 1 & x_{3,1} & x_{3,2}\\ 1 & . & .\\ 1 & . & .\\ 1 & . & .\\ 1 & x_{n,1} & x_{n,2} \end{array}\right)\left(\begin{array}{c} \beta_{0}\\ \beta_{1}\\ \beta_{2}\\.\\.\\.\\\beta_n \end{array}\right)&=&\left(\begin{array}{c} \beta_{0}+\beta_{1}x_{1,1}+\beta_{2}x_{1,2}\\ \beta_{0}+\beta_{1}x_{2,1}+\beta_{2}x_{2,2}\\ \beta_{0}+\beta_{1}x_{3,1}+\beta_{2}x_{3,2}\\ .\\ .\\ .\\ \beta_{0}+\beta_{1}x_{n,1}+\beta_{2}x_{n,2} \end{array}\right)=\left(\begin{array}{c} \mu_{1}\\ \mu_{2}\\ \mu_{3}\\ .\\ .\\ .\\ \mu_{n} \end{array}\right)
+\left(\begin{array}{ccc} 1 & x_{1,1} & x_{1,2}\\ 1 & x_{2,1} & x_{2,2}\\ 1 & x_{3,1} & x_{3,2}\\ 1 & . & .\\ 1 & . & .\\ 1 & . & .\\ 1 & x_{n,1} & x_{n,2} \end{array}\right)\left(\begin{array}{c} \beta_{0}\\ \beta_{1}\\ \beta_{2} \end{array}\right)&=&\left(\begin{array}{c} \beta_{0}+\beta_{1}x_{1,1}+\beta_{2}x_{1,2}\\ \beta_{0}+\beta_{1}x_{2,1}+\beta_{2}x_{2,2}\\ \beta_{0}+\beta_{1}x_{3,1}+\beta_{2}x_{3,2}\\ .\\ .\\ .\\ \beta_{0}+\beta_{1}x_{n,1}+\beta_{2}x_{n,2} \end{array}\right)=\left(\begin{array}{c} \mu_{1}\\ \mu_{2}\\ \mu_{3}\\ .\\ .\\ .\\ \mu_{n} \end{array}\right)
 \end{aligned}$$
+
 
 ## Matrix notation for linear models
 
